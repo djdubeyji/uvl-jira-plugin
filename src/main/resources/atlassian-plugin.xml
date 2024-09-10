@@ -1,0 +1,31 @@
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="${project.organization.name}" url="${project.organization.url}" />
+        <param name="plugin-icon">images/pluginIcon.png</param>
+        <param name="plugin-logo">images/pluginLogo.png</param>
+    </plugin-info>
+
+    <!-- add our i18n resource -->
+    <resource type="i18n" name="i18n" location="feebackPanel"/>
+    
+    <!-- add our web resources -->
+    <web-resource key="feebackPanel-resources" name="feebackPanel Web Resources">
+        <dependency>com.atlassian.auiplugin:ajs</dependency>
+        
+        <resource type="download" name="feebackPanel.css" location="/css/feebackPanel.css"/>
+        <resource type="download" name="feebackPanel.js" location="/js/feebackPanel.js"/>
+        <resource type="download" name="images/" location="/images"/>
+
+        <context>feebackPanel</context>
+    </web-resource>
+
+    <web-panel key="feedback-panel" location="atl.jira.view.issue.right.context" weight="100" name="Feedback Panel">
+    <description>Displays a list of feedback items.</description>
+    <context-provider class="com.yourcompany.FeedbackContextProvider"/>
+    <resource name="view" type="velocity" location="templates/feedback-panel.vm"/>
+</web-panel>
+
+    
+</atlassian-plugin>
