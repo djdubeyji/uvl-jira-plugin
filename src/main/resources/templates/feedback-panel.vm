@@ -1,51 +1,136 @@
 <div class="feedback-panel">
+    <div class="feedback-header">
+        <div class="feedback-title">Feedback</div>
+        <div class="feedback-actions">
+            <!-- Search Icon to trigger dialog -->
+            <button class="search-button" onclick="openSearchDialog()">
+                <i class="fas fa-search"></i> <!-- Search Icon -->
+            </button>
+            <button class="close-button" onclick="closeFeedbackPanel()">&times;</button>
+        </div>
+    </div>
+
     <div class="feedback-list">
         #foreach ($feedback in $feedbackList)
             <div class="feedback-item">
-                <p class="feedback-text">$feedback</p>
+                <div class="feedback-item-content">
+                    <p class="feedback-text">$feedback</p>
+                </div>
+                <button class="toggle-view" onclick="toggleView(this)">
+                    <i class="fas fa-eye"></i> <!-- Eye Icon -->
+                </button>
             </div>
         #end
     </div>
+
+    <!-- Search Dialog -->
+    <div class="search-dialog" style="display:none;">
+        <div class="search-dialog-content">
+            <input type="text" class="feedback-search" placeholder="Search feedback..." onkeyup="handleSearch(event)" />
+            <button class="close-search-dialog" onclick="closeSearchDialog()">Close</button>
+        </div>
+        <div class="search-results" style="max-height: 200px; overflow-y: auto;">
+            <!-- Results will be dynamically populated here -->
+        </div>
+        <div class="no-results" style="display:none; text-align: center; margin-top: 10px;">No matches found</div>
+    </div>
 </div>
 
+<!-- Link to FontAwesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <style type="text/css">
+    /* Position the feedback panel in the bottom-right corner */
     .feedback-panel {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 300px;
         padding: 10px;
         border: 1px solid #DFE1E6;
-        border-radius: 3px; 
+        border-radius: 3px;
         background-color: #F4F5F7;
-        margin-bottom: 20px;
+        z-index: 1000; /* Ensure it's on top */
+    }
+
+    .feedback-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
     }
 
     .feedback-title {
         font-size: 14px;
         font-weight: bold;
-        margin-bottom: 10px;
-        color: #172B4D; 
+        color: #172B4D;
+    }
+
+    .feedback-actions {
+        display: flex;
+        align-items: center;
+    }
+
+    .search-button {
+        background-color: #F4F5F7;
+        border: none;
+        font-size: 16px;
+        color: #7A869A;
+        cursor: pointer;
+        padding: 5px 10px;
+    }
+
+    .close-button {
+        background-color: #F4F5F7;
+        border: none;
+        font-size: 20px;
+        color: #7A869A;
+        cursor: pointer;
+        padding: 0 10px;
+    }
+
+    .close-button:hover {
+        color: #FF5630;
     }
 
     .feedback-list {
-        max-height: 300px;
+        max-height: 200px;
         overflow-y: auto;
         padding-right: 10px;
     }
 
     .feedback-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         padding: 8px;
-        border: 1px solid #DFE1E6; 
+        border: 1px solid #DFE1E6;
         border-radius: 3px;
-        background-color: #FFFFFF; 
-        margin-bottom: 8px; 
+        background-color: #FFFFFF;
+        margin-bottom: 8px;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        position: relative;
+        transition: opacity 0.3s, height 0.3s;
+    }
+
+    .feedback-item-content {
+        overflow: hidden;
+        transition: max-height 0.3s ease, opacity 0.3s ease;
+        max-height: 1000px; /* Default max-height */
+    }
+
+    .feedback-item.collapsed .feedback-item-content {
+        max-height: 24px; /* Adjust to the height of the toggle icon */
+        opacity: 0.5;
     }
 
     .feedback-item:last-child {
-        margin-bottom: 0; 
+        margin-bottom: 0;
     }
 
     .feedback-text {
         font-size: 12px;
-        color: #42526E; 
+        color: #42526E;
         margin: 0;
     }
 
@@ -54,7 +139,7 @@
     }
 
     .feedback-list::-webkit-scrollbar-track {
-        background: #F4F5F7; 
+        background: #F4F5F7;
         border-radius: 3px;
     }
 
@@ -66,4 +151,165 @@
     .feedback-list::-webkit-scrollbar-thumb:hover {
         background: #7A869A;
     }
+
+    /* Highlight with yellow box around */
+    .highlight {
+        display: inline-block;
+        padding: 2px 5px;
+        border: 2px solid yellow;
+        background-color: #FFEB3B;
+        border-radius: 3px;
+    }
+
+    /* Search Dialog */
+    .search-dialog {
+        position: absolute;
+        top: 40px; /* Position just below the search button */
+        right: 0;
+        background-color: white;
+        padding: 10px;
+        border: 1px solid #DFE1E6;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1001; /* Ensure it's above other elements */
+        width: 250px; /* Adjust width as needed */
+    }
+
+    .search-dialog-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .feedback-search {
+        padding: 10px;
+        width: 100%;
+        font-size: 14px;
+        border: 1px solid #DFE1E6;
+        border-radius: 3px;
+        margin-bottom: 10px;
+    }
+
+    .close-search-dialog {
+        background-color: #F4F5F7;
+        border: none;
+        padding: 5px 10px;
+        color: #7A869A;
+        cursor: pointer;
+    }
+
+    .close-search-dialog:hover {
+        color: #FF5630;
+    }
+
+    .no-results {
+        color: red;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    /* Search Result Item */
+    .search-result-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px;
+        border: 1px solid #DFE1E6;
+        border-radius: 3px;
+        background-color: #FFFFFF;
+        margin-bottom: 8px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-result-text {
+        font-size: 12px;
+        color: #42526E;
+        margin: 0;
+    }
+
+    .toggle-view {
+        background-color: #F4F5F7;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        font-size: 16px;
+        color: #7A869A;
+    }
+
+    .toggle-view:hover {
+        color: #FF5630;
+    }
+
+    .toggle-view .fas {
+        font-size: 16px;
+    }
 </style>
+
+<script type="text/javascript">
+    function closeFeedbackPanel() {
+        const panel = document.querySelector('.feedback-panel');
+        panel.style.display = 'none';
+    }
+
+    function openSearchDialog() {
+        const dialog = document.querySelector('.search-dialog');
+        dialog.style.display = 'block';
+        document.querySelector('.feedback-search').focus(); // Focus on the search input
+    }
+
+    function closeSearchDialog() {
+        const dialog = document.querySelector('.search-dialog');
+        dialog.style.display = 'none';
+        document.querySelector('.search-results').innerHTML = ''; // Clear results
+        document.querySelector('.no-results').style.display = 'none'; // Hide no results message
+    }
+
+    function handleSearch(event) {
+        if (event.key === 'Enter') {
+            displaySearchResults();
+            closeSearchDialog(); // Close the dialog on Enter
+        } else {
+            displaySearchResults();
+        }
+    }
+
+    function displaySearchResults() {
+        const searchInput = document.querySelector('.feedback-search').value.toLowerCase().trim();
+        const feedbackItems = document.querySelectorAll('.feedback-item');
+        const searchResultsContainer = document.querySelector('.search-results');
+        searchResultsContainer.innerHTML = ''; // Clear previous results
+
+        let found = false;
+
+        feedbackItems.forEach(item => {
+            const textElement = item.querySelector('.feedback-text');
+            const text = textElement.textContent.toLowerCase();
+
+            if (searchInput !== "" && text.includes(searchInput)) {
+                found = true;
+                const highlightedText = textElement.textContent.replace(new RegExp(searchInput, 'gi'), '<span class="highlight">$&</span>');
+                
+                searchResultsContainer.innerHTML += `
+                    <div class="search-result-item">
+                        <p class="search-result-text">${highlightedText}</p>
+                    </div>
+                `;
+            }
+        });
+
+        const noResultsMessage = document.querySelector('.no-results');
+        if (!found && searchInput !== "") {
+            noResultsMessage.style.display = 'block';
+        } else {
+            noResultsMessage.style.display = 'none';
+        }
+    }
+
+    function toggleView(button) {
+        const item = button.closest('.feedback-item');
+        item.classList.toggle('collapsed');
+        const icon = button.querySelector('.fas');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    }
+</script>
