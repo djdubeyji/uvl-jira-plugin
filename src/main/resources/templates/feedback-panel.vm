@@ -4,7 +4,7 @@
         <div class="feedback-actions">
             <!-- Search Icon to trigger dialog -->
             <button class="search-button" onclick="openSearchDialog()">
-                <i class="fas fa-search"></i> <!-- Search Icon -->
+                <i class="fas fa-search"></i>
             </button>
             <button class="close-button" onclick="closeFeedbackPanel()">&times;</button>
         </div>
@@ -40,17 +40,30 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <style type="text/css">
-    /* Position the feedback panel in the bottom-right corner */
+    /* Feedback Panel Layout */
     .feedback-panel {
-        position: fixed;
+        position: relative;
         bottom: 20px;
+        top: 10px;
         right: 20px;
-        width: 300px;
+        width: 100%;
+        max-width: 350px;
         padding: 10px;
         border: 1px solid #DFE1E6;
-        border-radius: 3px;
+        border-radius: 5px;
         background-color: #F4F5F7;
-        z-index: 1000; /* Ensure it's on top */
+       
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: width 0.3s ease-in-out;
+    }
+
+    /* Responsive Adjustment */
+    @media (max-width: 768px) {
+        .feedback-panel {
+            max-width: 90%;
+            right: 10px;
+            bottom: 10px;
+        }
     }
 
     .feedback-header {
@@ -61,7 +74,7 @@
     }
 
     .feedback-title {
-        font-size: 14px;
+        font-size: 16px;
         font-weight: bold;
         color: #172B4D;
     }
@@ -71,32 +84,22 @@
         align-items: center;
     }
 
-    .search-button {
-        background-color: #F4F5F7;
+    .search-button, .close-button {
+        background-color: transparent;
         border: none;
-        font-size: 16px;
+        font-size: 18px;
         color: #7A869A;
         cursor: pointer;
-        padding: 5px 10px;
-    }
-
-    .close-button {
-        background-color: #F4F5F7;
-        border: none;
-        font-size: 20px;
-        color: #7A869A;
-        cursor: pointer;
-        padding: 0 10px;
     }
 
     .close-button:hover {
         color: #FF5630;
     }
 
+    /* Feedback List Styling */
     .feedback-list {
         max-height: 200px;
         overflow-y: auto;
-        padding-right: 10px;
     }
 
     .feedback-item {
@@ -109,79 +112,71 @@
         background-color: #FFFFFF;
         margin-bottom: 8px;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        position: relative;
-        transition: opacity 0.3s, height 0.3s;
+        transition: opacity 0.3s ease, height 0.3s ease;
     }
 
     .feedback-item-content {
-        overflow: hidden;
         transition: max-height 0.3s ease, opacity 0.3s ease;
-        max-height: 1000px; /* Default max-height */
+        max-height: 1000px;
+        overflow: hidden;
     }
 
     .feedback-item.collapsed .feedback-item-content {
-        max-height: 24px; /* Adjust to the height of the toggle icon */
+        max-height: 24px;
         opacity: 0.5;
     }
 
-    .feedback-item:last-child {
-        margin-bottom: 0;
-    }
-
     .feedback-text {
-        font-size: 12px;
+        font-size: 14px;
         color: #42526E;
         margin: 0;
+        word-wrap: break-word;
     }
 
-    .feedback-list::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    .feedback-list::-webkit-scrollbar-track {
-        background: #F4F5F7;
-        border-radius: 3px;
-    }
-
-    .feedback-list::-webkit-scrollbar-thumb {
-        background: #A5ADBA;
-        border-radius: 3px;
-    }
-
-    .feedback-list::-webkit-scrollbar-thumb:hover {
-        background: #7A869A;
-    }
-
-    /* Highlight with yellow box around */
-    .highlight {
-        display: inline-block;
-        padding: 2px 5px;
-        border: 2px solid yellow;
-        background-color: #FFEB3B;
-        border-radius: 3px;
-    }
-
-    /* Search Dialog */
+    /* Search Dialog Styling */
     .search-dialog {
         position: absolute;
-        top: 40px; /* Position just below the search button */
+        top: 40px;
         right: 0;
-        background-color: white;
+        background-color: #FFFFFF;
         padding: 10px;
         border: 1px solid #DFE1E6;
         border-radius: 5px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        z-index: 1001; /* Ensure it's above other elements */
-        width: 250px; /* Adjust width as needed */
+        width: 100%;
+        max-width: 300px;
+        z-index: 1001;
     }
 
     .search-dialog-content {
         display: flex;
-        flex-direction: column;
+        justify-content: space-between;
         align-items: center;
+        margin-bottom: 10px;
     }
 
     .feedback-search {
+        padding: 8px;
+        font-size: 14px;
+        width: 80%;
+        border: 1px solid #DFE1E6;
+        border-radius: 3px;
+    }
+
+    .close-search-dialog {
+        background-color: transparent;
+        border: none;
+        font-size: 16px;
+        color: #7A869A;
+        cursor: pointer;
+        padding: 5px;
+    }
+
+    .close-search-dialog:hover {
+        color: #FF5630;
+    }
+
+       .feedback-search {
         padding: 10px;
         width: 100%;
         font-size: 14px;
@@ -227,6 +222,25 @@
         margin: 0;
     }
 
+    /* Highlight styling */
+    .highlight {
+        background-color: #FFEB3B;
+        padding: 2px 4px;
+        border-radius: 3px;
+    }
+
+    /* "No results" message */
+    .no-results {
+        color: red;
+        font-size: 14px;
+    }
+
+    .search-results {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+
     .toggle-view {
         background-color: #F4F5F7;
         border: none;
@@ -246,28 +260,25 @@
 </style>
 
 <script type="text/javascript">
-    function closeFeedbackPanel() {
-        const panel = document.querySelector('.feedback-panel');
-        panel.style.display = 'none';
-    }
-
     function openSearchDialog() {
-        const dialog = document.querySelector('.search-dialog');
-        dialog.style.display = 'block';
-        document.querySelector('.feedback-search').focus(); // Focus on the search input
+        document.querySelector('.search-dialog').style.display = 'block';
+        document.querySelector('.feedback-search').focus();
     }
 
     function closeSearchDialog() {
-        const dialog = document.querySelector('.search-dialog');
-        dialog.style.display = 'none';
+        document.querySelector('.search-dialog').style.display = 'none';
         document.querySelector('.search-results').innerHTML = ''; // Clear results
-        document.querySelector('.no-results').style.display = 'none'; // Hide no results message
+        document.querySelector('.no-results').style.display = 'none'; // Hide "no matches found"
+    }
+
+    function closeFeedbackPanel() {
+        document.querySelector('.feedback-panel').style.display = 'none';
     }
 
     function handleSearch(event) {
         if (event.key === 'Enter') {
             displaySearchResults();
-            closeSearchDialog(); // Close the dialog on Enter
+            closeSearchDialog(); // Close search on Enter
         } else {
             displaySearchResults();
         }
@@ -288,7 +299,6 @@
             if (searchInput !== "" && text.includes(searchInput)) {
                 found = true;
                 const highlightedText = textElement.textContent.replace(new RegExp(searchInput, 'gi'), '<span class="highlight">$&</span>');
-                
                 searchResultsContainer.innerHTML += `
                     <div class="search-result-item">
                         <p class="search-result-text">${highlightedText}</p>
