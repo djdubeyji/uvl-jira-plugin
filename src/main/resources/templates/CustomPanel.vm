@@ -1,0 +1,17 @@
+## CustomPanel.vm
+<meta name="admin.active.section" content="atl.jira.proj.config"/>
+<meta name="admin.active.tab" content="custom_panel_tab"/>
+
+#set ($project = $project)
+<h1>Custom Panel for $project.name</h1>
+<p>Welcome to your custom panel for managing specific project settings.</p>
+
+<form action="/secure/submitCustomPanel.jspa" method="post">
+    <label for="options">Select an option:</label>
+    <select id="options" name="selectedOption">
+        <option value="option1">Option 1</option>
+        <option value="option2">Option 2</option>
+        <option value="option3">Option 3</option>
+    </select>
+    <button type="submit">Submit</button>
+</form>

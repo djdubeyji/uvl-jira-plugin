@@ -27,5 +27,14 @@
     <resource name="view" type="velocity" location="templates/feedback-panel.vm"/>
 </web-panel>
 
+<web-item key="custom_panel_tab" section="atl.jira.proj.config/projectgroup3" weight="15">
+    <label>Panel</label>
+    <link linkId="custom.panel.tab.link">/secure/CustomPanel.jspa</link>
+</web-item>
+
+<web-resource key="custom-panel-resources" name="Custom Panel Resources" >
+    <resource type="velocity" name="templates/CustomPanel.vm" />
+</web-resource>
+
     
 </atlassian-plugin>
