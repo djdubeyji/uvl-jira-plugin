@@ -1,4 +1,5 @@
 <atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
+
     <plugin-info>
         <description>${project.description}</description>
         <version>${project.version}</version>
@@ -7,34 +8,17 @@
         <param name="plugin-logo">images/pluginLogo.png</param>
     </plugin-info>
 
-    <!-- add our i18n resource -->
-    <resource type="i18n" name="i18n" location="feebackPanel"/>
-    
-    <!-- add our web resources -->
-    <web-resource key="feebackPanel-resources" name="feebackPanel Web Resources">
-        <dependency>com.atlassian.auiplugin:ajs</dependency>
-        
-        <resource type="download" name="feebackPanel.css" location="/css/feebackPanel.css"/>
-        <resource type="download" name="feebackPanel.js" location="/js/feebackPanel.js"/>
-        <resource type="download" name="images/" location="/images"/>
-
-        <context>feebackPanel</context>
-    </web-resource>
+<web-panel key="simple-summary-input" location="webpanels.admin.summary.right-panels" weight="100">
+    <description>A simple input field for project configuration summary.</description>
+    <label key = "database selection" />
+    <resource name="view" type="velocity" location="/templates/custom-summary-field.vm"/>
+</web-panel>
 
     <web-panel key="feedback-panel" location="atl.jira.view.issue.right.context" weight="100" name="Feedback Panel">
     <description>Displays a list of feedback items.</description>
     <context-provider class="com.yourcompany.FeedbackContextProvider"/>
     <resource name="view" type="velocity" location="templates/feedback-panel.vm"/>
 </web-panel>
+ 
 
-<web-item key="custom_panel_tab" section="atl.jira.proj.config/projectgroup3" weight="15">
-    <label>Panel</label>
-    <link linkId="custom.panel.tab.link">/secure/CustomPanel.jspa</link>
-</web-item>
-
-<web-resource key="custom-panel-resources" name="Custom Panel Resources" >
-    <resource type="velocity" name="templates/CustomPanel.vm" />
-</web-resource>
-
-    
 </atlassian-plugin>
