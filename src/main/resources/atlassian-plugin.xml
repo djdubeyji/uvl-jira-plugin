@@ -1,24 +1,48 @@
-<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
+<?xml version="1.0" encoding="UTF-8"?>
 
-    <plugin-info>
-        <description>${project.description}</description>
-        <version>${project.version}</version>
-        <vendor name="${project.organization.name}" url="${project.organization.url}" />
-        <param name="plugin-icon">images/pluginIcon.png</param>
-        <param name="plugin-logo">images/pluginLogo.png</param>
-    </plugin-info>
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2"> 
+  <plugin-info> 
+    <description>${project.description}</description>  
+    <version>${project.version}</version>  
+    <vendor name="${project.organization.name}" url="${project.organization.url}"/>  
+    <param name="plugin-icon">images/pluginIcon.png</param>  
+    <param name="plugin-logo">images/pluginLogo.png</param> 
+  </plugin-info>  
+  <!-- add our i18n resource -->  
+  <resource type="i18n" name="i18n" location="servlettrial"/>  
+  <!-- add our web resources -->  
+  <web-resource key="servlettrial-resources" name="servlettrial Web Resources"> 
+    <dependency>com.atlassian.auiplugin:ajs</dependency>  
+    <resource type="download" name="servlettrial.css" location="/css/servlettrial.css"/>  
+    <resource type="download" name="servlettrial.js" location="/js/servlettrial.js"/>  
+    <resource type="download" name="images/" location="/images"/>  
+    <context>servlettrial</context> 
+  </web-resource>  
 
-<web-panel key="simple-summary-input" location="webpanels.admin.summary.right-panels" weight="100">
-    <description>A simple input field for project configuration summary.</description>
-    <label key = "database selection" />
-    <resource name="view" type="velocity" location="/templates/custom-summary-field.vm"/>
-</web-panel>
+  <servlet name="My Servlet" i18n-name-key="my-servlet.name" key="my-servlet" class="com.example.plugins.servlet.MyServlet"> 
+    <description key="my-servlet.description">The My Servlet Plugin</description>  
+    <url-pattern>/myservlet</url-pattern> 
+  </servlet>
 
-    <web-panel key="feedback-panel" location="atl.jira.view.issue.right.context" weight="100" name="Feedback Panel">
-    <description>Displays a list of feedback items.</description>
-    <context-provider class="com.yourcompany.FeedbackContextProvider"/>
+  <web-item key="my_new_tabbed_item_in_an_existing_project_group"
+          name="My New Tabbed Item"
+          section="atl.jira.proj.config/projectgroup3"
+          weight="15">
+    <label key="Feed.UVL">Feed.UVL</label>
+    <link linkId="my_new_tabbed_item_link">/plugins/servlet/myservlet</link>
+</web-item>
+
+<context-provider key="issueKeyContextProvider" class="com.example.plugins.IssueKeyContextProvider">
+    <description>Provides the issue key to Velocity template</description>
+</context-provider>
+
+<web-panel key="feedback-panel" location="atl.jira.view.issue.right.context" weight="100">
+    <description>Feedback Panel</description>
+    <context-provider class="com.example.plugins.IssueKeyContextProvider">
+        <param name="jira.context.type" value="issue"/>
+    </context-provider>
     <resource name="view" type="velocity" location="templates/feedback-panel.vm"/>
 </web-panel>
- 
+
 
 </atlassian-plugin>

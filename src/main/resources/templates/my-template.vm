@@ -1,0 +1,292 @@
+<meta name="admin.active.section" content="atl.jira.proj.config"/>
+<meta name="admin.active.tab" content="my_new_tabbed_item_in_an_existing_project_group"/>
+<div class="custom-container">
+    <h2>Datasets</h2>
+    <form id="urlForm" onsubmit="return submitEntry()">
+        <label for="feedbackInput">Enter Feedback Requirements Relation:</label>
+        <input type="text" id="feedbackInput" placeholder="Enter Feedback Identifier (e.g., KomootRel)..." required />
+
+        <label for="usageInput">Enter Usage Information:</label>
+        <input type="text" id="usageInput" placeholder="Enter Usage Identifier (e.g., KomootUsage)..." required />
+
+        <input type="submit" value="Save Identifiers" />
+    </form>
+
+    <div id="responseMessage" style="display:none;"></div>
+    <button id="fetchUrlBtn" onclick="fetchStoredUrls()">Fetch Current URLs</button>
+    <button id="refreshBtn" onclick="refreshData()">Refresh</button>
+</div>
+
+
+<style>
+    /* General Container Styling */
+    .custom-container {
+        max-width: 500px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        font-family: Arial, sans-serif;
+    }
+
+    .custom-container h2 {
+        text-align: center;
+        font-size: 20px;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    /* Form Styling */
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    label {
+        font-weight: bold;
+        color: #555;
+        font-size: 14px;
+    }
+
+    input[type="text"] {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    input[type="text"]:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    input[type="submit"] {
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+
+    /* Response Message Styling */
+    #responseMessage {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        text-align: left;
+        word-wrap: break-word; /* Allow long words to break onto the next line */
+        word-break: break-word; /* Ensure long URLs break properly */
+        overflow-wrap: break-word; /* Ensure URLs fit within the container */
+    }
+
+    /* Button Styling */
+    button {
+        padding: 10px 15px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #218838;
+    }
+
+    button:focus {
+        outline: none;
+        box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+    }
+</style>
+
+<script>
+    const BASE_URL = "https://feed-uvl.ifi.uni-heidelberg.de/hitec/jira/uvldashboard/return_dashboard/";
+    const JIRA_BASE_URL = "http://localhost:2990/jira"; // Update with your Jira base URL
+    const PROJECT_KEY = "KOMOOTRE"; // Update with your Jira project key
+    const FEEDBACK_PROPERTY_KEY = "feedbackRequirementsRelation"; // Property key for feedback
+    const USAGE_PROPERTY_KEY = "usageInformation"; // Property key for usage
+    const USERNAME = "admin"; // Jira username
+    const PASSWORD = "admin"; // Jira password
+
+    // Utility function to create Basic Auth header
+    function getAuthHeader() {
+        return "Basic " + btoa(${USERNAME}:${PASSWORD});
+    }
+
+    // Function to save URLs as separate entity properties
+    function submitEntry() {
+        const feedbackIdentifier = document.getElementById("feedbackInput").value;
+        const usageIdentifier = document.getElementById("usageInput").value;
+
+        // Construct full URLs
+        const feedbackUrl = ${BASE_URL}${feedbackIdentifier};
+        const usageUrl = ${BASE_URL}${usageIdentifier};
+
+        // Save feedback URL
+        const feedbackApiUrl = ${JIRA_BASE_URL}/rest/api/2/project/${PROJECT_KEY}/properties/${FEEDBACK_PROPERTY_KEY};
+        const feedbackBody = { url: feedbackUrl, flag: true };
+
+        fetch(feedbackApiUrl, {
+            method: "PUT",
+            headers: {
+                "Authorization": getAuthHeader(),
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(feedbackBody),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(Failed to save Feedback URL. Status: ${response.status});
+                }
+                return saveUsageUrl(usageUrl); // Call to save usage URL
+            })
+            .then(() => {
+                const responseMessage = document.getElementById("responseMessage");
+                responseMessage.style.display = "block";
+                responseMessage.textContent = "Identifiers saved successfully!";
+            })
+            .catch((error) => {
+                const responseMessage = document.getElementById("responseMessage");
+                responseMessage.style.display = "block";
+                responseMessage.textContent = "Error saving URLs: " + error.message;
+            });
+
+        return false; // Prevent default form submission
+    }
+
+    // Function to save the Usage URL
+    function saveUsageUrl(usageUrl) {
+        const usageApiUrl = ${JIRA_BASE_URL}/rest/api/2/project/${PROJECT_KEY}/properties/${USAGE_PROPERTY_KEY};
+        const usageBody = { url: usageUrl, flag: true };
+
+        return fetch(usageApiUrl, {
+            method: "PUT",
+            headers: {
+                "Authorization": getAuthHeader(),
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(usageBody),
+        });
+    }
+
+    // Function to fetch the currently stored URLs
+    function fetchStoredUrls() {
+        const feedbackApiUrl = ${JIRA_BASE_URL}/rest/api/2/project/${PROJECT_KEY}/properties/${FEEDBACK_PROPERTY_KEY};
+        const usageApiUrl = ${JIRA_BASE_URL}/rest/api/2/project/${PROJECT_KEY}/properties/${USAGE_PROPERTY_KEY};
+
+        // Fetch Feedback URL
+        fetch(feedbackApiUrl, {
+            method: "GET",
+            headers: {
+                "Authorization": getAuthHeader(),
+                "Content-Type": "application/json",
+            },
+        })
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else if (response.status === 404) {
+                    throw new Error("No Feedback URL found.");
+                } else {
+                    throw new Error("Failed to fetch Feedback URL.");
+                }
+            })
+            .then((data) => {
+                const feedbackUrl = data.value?.url || "undefined";
+
+                // Fetch Usage URL
+                return fetch(usageApiUrl, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": getAuthHeader(),
+                        "Content-Type": "application/json",
+                    },
+                }).then((response) => {
+                    if (response.ok) {
+                        return response.json().then((data) => {
+                            const usageUrl = data.value?.url || "undefined";
+
+                            const responseMessage = document.getElementById("responseMessage");
+                            responseMessage.style.display = "block";
+                            responseMessage.innerHTML = 
+                                <strong>Feedback Requirements Relation:</strong><br>
+                                <a href="${feedbackUrl}" target="_blank">${feedbackUrl}</a><br><br>
+                                <strong>Usage Information:</strong><br>
+                                <a href="${usageUrl}" target="_blank">${usageUrl}</a>
+                            ;
+                            responseMessage.className = "success";
+                        });
+                    } else if (response.status === 404) {
+                        throw new Error("No Usage URL found.");
+                    } else {
+                        throw new Error("Failed to fetch Usage URL.");
+                    }
+                });
+            })
+            .catch((error) => {
+                const responseMessage = document.getElementById("responseMessage");
+                responseMessage.style.display = "block";
+                responseMessage.textContent = "Error fetching URLs: " + error.message;
+                responseMessage.className = "error";
+            });
+    }
+
+    // Function to refresh data
+    function refreshData() {
+        const feedbackIdentifier = document.getElementById("feedbackInput").value;
+        const usageIdentifier = document.getElementById("usageInput").value;
+
+        // Construct full URLs
+        const feedbackUrl = ${BASE_URL}${feedbackIdentifier};
+        const usageUrl = ${BASE_URL}${usageIdentifier};
+
+        // Save feedback URL with flag
+        const feedbackApiUrl = ${JIRA_BASE_URL}/rest/api/2/project/${PROJECT_KEY}/properties/${FEEDBACK_PROPERTY_KEY};
+        const feedbackBody = { url: feedbackUrl, flag: true };
+
+        fetch(feedbackApiUrl, {
+            method: "PUT",
+            headers: {
+                "Authorization": getAuthHeader(),
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(feedbackBody),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(Failed to refresh Feedback URL. Status: ${response.status});
+                }
+                return saveUsageUrl(usageUrl); // Call to save usage URL
+            })
+            .then(() => {
+                const responseMessage = document.getElementById("responseMessage");
+                responseMessage.style.display = "block";
+                responseMessage.textContent = "Data refreshed successfully!";
+            })
+            .catch((error) => {
+                const responseMessage = document.getElementById("responseMessage");
+                responseMessage.style.display = "block";
+                responseMessage.textContent = "Error refreshing data: " + error.message;
+            });
+    }
+</script>
