@@ -21,9 +21,9 @@ import javax.json.JsonReader;
 public class IssueKeyContextProvider implements ContextProvider {
 
     private static final String JIRA_BASE_URL = "http://localhost:2990/jira"; // Jira Base URL
-    private static final String ENTITY_PROPERTY_KEY_PREFIX = "feedbackDatas_"; // Prefix for feedback properties
-    private static final String USERNAME = "admin"; // Jira username
-    private static final String PASSWORD = "admin"; // Jira password
+    private static final String ENTITY_PROPERTY_KEY_PREFIX = "feedbackDat_"; 
+    private static final String USERNAME = "admin"; 
+    private static final String PASSWORD = "admin"; 
 
     @Override
     public void init(Map<String, String> params) {
@@ -158,12 +158,12 @@ public class IssueKeyContextProvider implements ContextProvider {
                             int valueStartIndex = cleanedItem.indexOf("\"", textStartIndex + 7) + 1;
                             int valueEndIndex = cleanedItem.lastIndexOf("\"");
                             if (valueStartIndex != -1 && valueEndIndex != -1 && valueEndIndex > valueStartIndex) {
-                                // Parse and unescape the text properly
+                    
                                 String feedbackText = cleanedItem.substring(valueStartIndex, valueEndIndex)
-                                        .replace("\\n", "\n")   // Handle newline escape
-                                        .replace("\\t", "\t")   // Handle tab escape
-                                        .replace("\\\"", "\"")  // Handle escaped quotes
-                                        .replace("\\\\", "\\")  // Handle escaped backslashes
+                                        .replace("\\n", "\n")   
+                                        .replace("\\t", "\t")   
+                                        .replace("\\\"", "\"")  
+                                        .replace("\\\\", "\\")  
                                         .trim();
                                 feedbackMap.put("text", feedbackText);
                             }

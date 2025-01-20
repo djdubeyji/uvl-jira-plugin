@@ -21,12 +21,12 @@ public class MyServlet extends HttpServlet {
     private static final String BASE_URL = "https://feed-uvl.ifi.uni-heidelberg.de/hitec/jira/uvldashboard/return_dashboard/";
     private String feedbackIdentifier = "Not set";
     private String usageIdentifier = "Not set";
-    private static final String JIRA_BASE_URL = "http://localhost:2990/jira"; // Replace with your Jira base URL
-    private static final String ENTITY_PROPERTY_KEY_PREFIX = "customFeedbackData"; // Prefix for feedback properties
-    private static final String USAGE_PROPERTY_KEY_PREFIX = "usageData"; // Prefix for usage properties
-    private static final String PROJECT_KEY = "KOMOOTRE"; // Replace with your Jira project key
-    private static final String USERNAME = "admin"; // Replace with Jira username
-    private static final String PASSWORD = "admin"; // Replace with Jira password
+    private static final String JIRA_BASE_URL = "http://localhost:2990/jira"; 
+    private static final String ENTITY_PROPERTY_KEY_PREFIX = "customFeedbackData"; 
+    private static final String USAGE_PROPERTY_KEY_PREFIX = "usageData"; 
+    private static final String PROJECT_KEY = "KOMOOTRE"; 
+    private static final String USERNAME = "admin"; 
+    private static final String PASSWORD = "admin"; 
     private static final int MAX_PROPERTY_SIZE = 32000;
     private Map<String, HashSet<String>> issueKeyToReviewIds = new HashMap<>();
     private Map<String, String> reviewIdToText = new HashMap<>();
@@ -76,8 +76,6 @@ public class MyServlet extends HttpServlet {
             }
         // Check if inputs are "Not set"
         boolean isError = "Not set".equals(feedbackIdentifier) || "Not set".equals(usageIdentifier);
-
-        // Prepare error message
         String errorMessage = isError ? "Incorrect API call: Please enter valid identifiers." : "";
         String errorMessageStyle = isError ? "" : "display: none;";
 
