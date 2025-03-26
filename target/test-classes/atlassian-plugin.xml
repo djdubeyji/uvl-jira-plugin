@@ -1,0 +1,14 @@
+<atlassian-plugin key="com.example.plugins.servlettrial-tests" name="servlettrial" plugins-version="2">
+    <plugin-info>
+        <description>This is the com.example.plugins:servlettrial plugin for Atlassian JIRA.</description>
+        <version>1.0.0-SNAPSHOT</version>
+        <vendor name="Example Company" url="http://www.example.com/" />
+    </plugin-info>
+
+    <!-- from our base plugin -->
+    <component-import key="myComponent" interface="com.example.plugins.api.MyPluginComponent"/>
+
+    <!-- from the product container -->
+    <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties" />
+    
+</atlassian-plugin>

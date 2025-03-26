@@ -1,0 +1,11 @@
+com/example/plugins/servlet/MyServlet$Code.class
+com/example/plugins/servlet/MyServlet.class
+com/example/plugins/config/MyPluginJavaConfig.class
+com/example/plugins/ParseApiResponse$Code.class
+com/example/plugins/ParseApiResponse.class
+com/example/plugins/ParseApiResponse$Review.class
+com/example/plugins/impl/MyPluginComponentImpl.class
+com/example/plugins/IssueKeyContextProvider.class
+com/example/plugins/servlet/MyServlet$Token.class
+com/example/plugins/api/MyPluginComponent.class
+com/example/plugins/ParseApiResponse$Token.class

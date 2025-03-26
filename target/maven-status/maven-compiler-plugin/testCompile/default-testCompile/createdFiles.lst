@@ -1,0 +1,4 @@
+it/com/example/plugins/servlet/MyServletFuncTest.class
+ut/com/example/plugins/servlet/MyServletTest.class
+it/com/example/plugins/MyComponentWiredTest.class
+ut/com/example/plugins/MyComponentUnitTest.class

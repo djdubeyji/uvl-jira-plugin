@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Feed.UVL Data Import</title>
+    <meta name="decorator" content="atl.general" />
+    <link rel="stylesheet" href="/download/resources/com.example.plugins.servlet:servlettrial-resources/servlettrial.css">
+    <script src="/download/resources/com.example.plugins.servlet:servlettrial-resources/servlettrial.js"></script>
+    <style>
+        body {
+            font-family: "Arial", sans-serif;
+            background-color: #f4f5f7;
+            margin: 0;
+            padding: 0;
+        }
+        .page-wrapper {
+            max-width: 900px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #dfe1e6;
+        }
+        h1 {
+            font-size: 24px;
+            color: #172b4d;
+            margin: 20px;
+            padding: 20px; 
+        }
+        .aui-message {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 3px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        .aui-message-success {
+            background-color: #e3fcef;
+            border: 1px solid #36b37e;
+            color: #006644;
+        }
+        .aui-message-success .aui-icon {
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        .aui-message-success p {
+            margin: 0;
+            flex-grow: 1;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #344563;
+        }
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 14px;
+            border: 1px solid #dfe1e6;
+            border-radius: 3px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .form-group input[type="text"]:focus {
+            border-color: #dfe1e6;
+            box-shadow: none;
+        }
+        .button-group {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        .aui-button-primary {
+            background-color: #0052cc;
+            color: white;
+        }
+        .aui-button-primary:hover {
+            background-color: #0747a6;
+        }
+        .aui-button {
+            background-color: #f4f5f7;
+            color: #344563;
+            border: 1px solid #dfe1e6;
+        }
+        .aui-button:hover {
+            background-color: #ebecf0;
+        }
+
+        .aui-message-error {
+            background-color: #ffebe6;
+            border: 1px solid #de350b;
+            color: #bf2600;
+            padding: 15px;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .aui-message-error .aui-icon {
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        .aui-message-error p {
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .aui-page-header-main{
+            margin: 10px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="aui-page-panel">
+        <div class="aui-page-panel-inner">
+            <header class="aui-page-header">
+                <div class="aui-page-header-inner">
+                    <h1 class="aui-page-header-main">Feed.UVL Data Import</h1>
+                </div>
+            </header>
+
+            <div class="page-wrapper">
+
+                <div id="successMessage" class="aui-message aui-message-success" style="{{successMessageStyle}}">
+                    <span class="aui-icon aui-icon-small aui-iconfont-success"></span>
+                    <p>{{successMessage}}</p>
+                </div>
+                
+
+                <!-- Form Section -->
+                <form method="POST" action="">
+                    <div class="form-group">
+                        <label for="feedbackInput">Feedback Requirements Relation</label>
+                        <input type="text" id="feedbackInput" name="feedbackInput" value="{{feedbackIdentifier}}" placeholder="Enter Feedback Requirements" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="usageInput">Usage Information</label>
+                        <input type="text" id="usageInput" name="usageInput" value="{{usageIdentifier}}" placeholder="Enter Usage Information" required />
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="aui-button aui-button-primary">Save Data</button>
+                        <button type="button" class="aui-button" onclick="window.location.href='/jira/projects';">Projects Page</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,892 @@
+
+<div class="feedback-panel">
+    <div class="feedback-header">
+        <div class="feedback-title">FeReRe</div>
+        <div class="feedback-actions">
+        <button class="filter-button" onclick="toggleFilterMenu(event)">
+                <i class="fas fa-filter"></i>
+            </button>
+<div class="filter-dropdown" style="display: none;">
+    <!-- Domain Level -->
+    <div class="filter-group">
+        <div class="filter-main-option">
+            <span class="filter-level" onclick="filterByLevel('Domain Level')">Domain Level</span>
+            <span class="arrow" onclick="toggleSubMenu('domain-submenu')">&#x25BE;</span>
+        </div>
+        <div class="filter-submenu" id="domain-submenu" style="display: none;">
+            <button class="filter-option" onclick="filterByOption('Stakeholder')">Stakeholder</button>
+            <button class="filter-option" onclick="filterByOption('Task')">Tasks</button>
+            <button class="filter-option" onclick="filterByOption('Activity')">Activities</button>
+            <button class="filter-option" onclick="filterByOption('Domain Data')">Domain Data</button>
+        </div>
+    </div>
+
+    <!-- Interaction Level -->
+    <div class="filter-group">
+        <div class="filter-main-option">
+            <span class="filter-level" onclick="filterByLevel('Interaction Level')">Interaction Level</span>
+            <span class="arrow" onclick="toggleSubMenu('interaction-submenu')">&#x25BE;</span>
+        </div>
+        <div class="filter-submenu" id="interaction-submenu" style="display: none;">
+            <button class="filter-option" onclick="filterByOption('Interaction')">Interaction</button>
+            <button class="filter-option" onclick="filterByOption('Interaction Data')">Interaction Data</button>
+            <button class="filter-option" onclick="filterByOption('System Function')">System Functions</button>
+            <button class="filter-option" onclick="filterByOption('Workspace')">Workspace</button>
+        </div>
+    </div>
+
+    <!-- System Level -->
+    <div class="filter-group">
+        <div class="filter-main-option">
+            <span class="filter-level" onclick="filterByLevel('System Level')">System Level</span>
+            <span class="arrow" onclick="toggleSubMenu('system-submenu')">&#x25BE;</span>
+        </div>
+        <div class="filter-submenu" id="system-submenu" style="display: none;">
+            <button class="filter-option" onclick="filterByOption('System')">System</button>
+        </div>
+    </div>
+</div>
+
+
+
+            <!-- Search Icon to trigger dialog -->
+            <button class="search-button" onclick="openSearchDialog()">
+                <i class="fas fa-search"></i>
+            </button>
+            <button class="close-button" onclick="closeFeedbackPanel()">&times;</button>
+        </div>
+    </div>
+
+ <div class="feedback-list">
+#if($feedbackList && $feedbackList.size() > 0)
+    #foreach ($feedback in $feedbackList)
+        <div class="feedback-item">
+            <div class="feedback-item-content">
+                <p class="feedback-id" style="display: none;">ID: $feedback.id</p>
+                <p class="feedback-text">$feedback.text</p>
+            </div>
+            <button class="toggle-view" onclick="toggleView(this)">
+                <i class="fas fa-eye"></i> <!-- Eye Icon -->
+            </button>
+        </div>
+    #end
+#else
+    <p>No feedback available.</p>
+#end
+</div>
+    <!-- Search Dialog -->
+    <div class="search-dialog" style="display:none;">
+        <div class="search-dialog-content">
+            <input type="text" class="feedback-search" placeholder="Search feedback..." onkeyup="handleSearch(event)" />
+            <button class="close-search-dialog" onclick="closeSearchDialog()">Close</button>
+        </div>
+        <div class="search-results" style="max-height: 200px; overflow-y: auto;">
+            <!-- Results will be dynamically populated here -->
+        </div>
+        <div class="no-results" style="display:none; text-align: center; margin-top: 10px;">No matches found</div>
+    </div>
+</div>
+
+<!-- Link to FontAwesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style type="text/css">
+    /* Feedback Panel Layout */
+    .feedback-panel {
+        position: relative;
+        bottom: 20px;
+        top: 10px;
+        right: 20px;
+        width: 100%;
+        max-width: 350px;
+        padding: 10px;
+        border: 1px solid #DFE1E6;
+        border-radius: 5px;
+        background-color: #F4F5F7;
+       
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: width 0.3s ease-in-out;
+    }
+
+    /* Responsive Adjustment */
+    @media (max-width: 768px) {
+        .feedback-panel {
+            max-width: 90%;
+            right: 10px;
+            bottom: 10px;
+        }
+    }
+
+    .feedback-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .feedback-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #172B4D;
+    }
+
+    .feedback-actions {
+        display: flex;
+        align-items: center;
+    }
+
+    .search-button, .close-button {
+        background-color: transparent;
+        border: none;
+        font-size: 18px;
+        color: #7A869A;
+        cursor: pointer;
+    }
+
+    .close-button:hover {
+        color: #FF5630;
+    }
+
+    /* Feedback List Styling */
+    .feedback-list {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .feedback-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px;
+        border: 1px solid #DFE1E6;
+        border-radius: 3px;
+        background-color: #FFFFFF;
+        margin-bottom: 8px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        transition: opacity 0.3s ease, height 0.3s ease;
+    }
+
+    .feedback-item-content {
+        transition: max-height 0.3s ease, opacity 0.3s ease;
+        max-height: 1000px;
+        overflow: hidden;
+    }
+
+    .feedback-item.collapsed .feedback-item-content {
+        max-height: 24px;
+        opacity: 0.5;
+    }
+
+    .feedback-text {
+        font-size: 14px;
+        color: #42526E;
+        margin: 0;
+        word-wrap: break-word;
+    }
+
+    /* Search Dialog Styling */
+    .search-dialog {
+        position: absolute;
+        top: 40px;
+        right: 0;
+        background-color: #FFFFFF;
+        padding: 10px;
+        border: 1px solid #DFE1E6;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 300px;
+        z-index: 1001;
+    }
+
+    .search-dialog-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .feedback-search {
+        padding: 8px;
+        font-size: 14px;
+        width: 80%;
+        border: 1px solid #DFE1E6;
+        border-radius: 3px;
+    }
+
+    .close-search-dialog {
+        background-color: transparent;
+        border: none;
+        font-size: 16px;
+        color: #7A869A;
+        cursor: pointer;
+        padding: 5px;
+    }
+
+    .close-search-dialog:hover {
+        color: #FF5630;
+    }
+
+       .feedback-search {
+        padding: 10px;
+        width: 100%;
+        font-size: 14px;
+        border: 1px solid #DFE1E6;
+        border-radius: 3px;
+        margin-bottom: 10px;
+    }
+
+    .close-search-dialog {
+        background-color: #F4F5F7;
+        border: none;
+        padding: 5px 10px;
+        color: #7A869A;
+        cursor: pointer;
+    }
+
+    .close-search-dialog:hover {
+        color: #FF5630;
+    }
+
+    .no-results {
+        color: red;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    /* Search Result Item */
+    .search-result-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px;
+        border: 1px solid #DFE1E6;
+        border-radius: 3px;
+        background-color: #FFFFFF;
+        margin-bottom: 8px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-result-text {
+        font-size: 12px;
+        color: #42526E;
+        margin: 0;
+    }
+
+    /* Highlight styling */
+    .highlight {
+        background-color: #FFEB3B;
+        padding: 2px 4px;
+        border-radius: 3px;
+    }
+
+    /* "No results" message */
+    .no-results {
+        color: red;
+        font-size: 14px;
+    }
+
+    .search-results {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+
+    .toggle-view {
+        background-color: #F4F5F7;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        font-size: 16px;
+        color: #7A869A;
+    }
+
+    .toggle-view:hover {
+        color: #FF5630;
+    }
+
+    .toggle-view .fas {
+        font-size: 16px;
+    }
+
+    /* Filter Icon */
+    .filter-button {
+        background-color: transparent;
+        border: none;
+        font-size: 18px;
+        color: #7A869A;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+
+    .filter-button:hover {
+        color: #FF5630;
+    }
+
+    /* Filter Dropdown Menu */
+    .filter-dropdown {
+        position: absolute;
+        top: 50px; /* Adjust based on header height */
+        right: 20px; /* Align with filter button */
+        background-color: #FFFFFF;
+        border: 1px solid #DFE1E6;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1001;
+        display: flex;
+        flex-direction: column;
+        padding: 5px;
+    }
+
+    /* Main Filter Option */
+      /* General Dropdown Styling */
+    .filter-group {
+        margin-bottom: 10px;
+    }
+
+    .filter-main-option {
+        display: flex;
+        justify-content: space-between; /* Move arrow to the far right */
+        align-items: center;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 5px 10px;
+        background-color: #f9f9f9;
+
+    }
+
+    .filter-level {
+        flex-grow: 1; /* Pushes the arrow to the far right */
+        color: #172B4D;
+        cursor: pointer;
+    }
+
+    .arrow {
+        font-size: 20px;
+        color: #7A869A;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    }
+
+    .arrow:hover {
+        color: #5E6C84;
+    }
+
+    .filter-submenu {
+        margin-left: 20px;
+        padding-left: 10px;
+        border-left: 2px solid #DFE1E6;
+        display: none; /* Hidden by default */
+    }
+
+    .filter-option {
+        padding: 6px 10px;
+        font-size: 13px;
+        color: #42526E;
+        background-color: transparent;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .filter-option:hover {
+        background-color: #F4F5F7;
+        color: #172B4D;
+    }
+
+.highlight-domain-level {
+    background-color: lightblue;
+}
+
+.highlight-interaction-level {
+    background-color: lightgreen;
+}
+
+.highlight-system-level {
+    background-color: lightcoral;
+}
+
+.highlight-default {
+    background-color: yellow;
+}
+
+.highlight {
+    background-color: #ffc107;
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 2px;
+}
+/* Colors for Each Option */
+.highlight-stakeholder {
+    background-color: lightblue;
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 0 2px;
+}
+
+.highlight-task {
+    background-color: lightgreen;
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 0 2px;
+}
+
+.highlight-activity {
+    background-color: lightcoral;
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 0 2px;
+}
+
+.highlight-domain-data {
+    background-color: lightgoldenrodyellow;
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 0 2px;
+}
+
+.highlight-interaction {
+    background-color: lavender;
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 0 2px;
+}
+
+.highlight-interaction-data {
+    background-color: peachpuff;
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 0 2px;
+}
+
+.highlight-system-function {
+    background-color: palegreen;
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 0 2px;
+}
+
+.highlight-workspace {
+    background-color: lightsteelblue;
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 0 2px;
+}
+
+.highlight-system {
+    background-color: lightpink;
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 0 2px;
+}
+
+.filter-option.active {
+     /* Change this to your desired color */
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+.filter-option.active.highlight-stakeholder {
+    background-color: lightblue;
+    font-weight: bold;
+}
+
+.filter-option.active.highlight-task {
+    background-color: lightgreen;
+    font-weight: bold;
+}
+
+.filter-option.active.highlight-activity {
+    background-color: lightcoral;
+    font-weight: bold;
+}
+
+.filter-option.active.highlight-domain-data {
+    background-color: lightgoldenrodyellow;
+    font-weight: bold;
+}
+
+.filter-option.active.highlight-interaction {
+    background-color: lavender;
+    font-weight: bold;
+}
+
+.filter-option.active.highlight-interaction-data {
+    background-color: peachpuff;
+    font-weight: bold;
+}
+
+.filter-option.active.highlight-system-function {
+    background-color: palegreen;
+    font-weight: bold;
+}
+
+.filter-option.active.highlight-workspace {
+    background-color: lightsteelblue;
+    font-weight: bold;
+}
+
+.filter-option.active.highlight-system {
+    background-color: lightpink;
+    font-weight: bold;
+}
+
+</style>
+
+
+<script type="text/javascript">
+    function openSearchDialog() {
+        document.querySelector('.search-dialog').style.display = 'block';
+        document.querySelector('.feedback-search').focus();
+    }
+
+    function closeSearchDialog() {
+        document.querySelector('.search-dialog').style.display = 'none';
+        document.querySelector('.search-results').innerHTML = ''; // Clear results
+        document.querySelector('.no-results').style.display = 'none'; // Hide "no matches found"
+    }
+
+    function closeFeedbackPanel() {
+        document.querySelector('.feedback-panel').style.display = 'none';
+    }
+
+    function handleSearch(event) {
+        if (event.key === 'Enter') {
+            displaySearchResults();
+            closeSearchDialog(); // Close search on Enter
+        } else {
+            displaySearchResults();
+        }
+    }
+
+    function displaySearchResults() {
+        const searchInput = document.querySelector('.feedback-search').value.toLowerCase().trim();
+        const feedbackItems = document.querySelectorAll('.feedback-item');
+        const searchResultsContainer = document.querySelector('.search-results');
+        searchResultsContainer.innerHTML = ''; // Clear previous results
+
+        let found = false;
+
+        feedbackItems.forEach(item => {
+            const textElement = item.querySelector('.feedback-text');
+            const text = textElement.textContent.toLowerCase();
+
+            if (searchInput !== "" && text.includes(searchInput)) {
+                found = true;
+                const highlightedText = textElement.textContent.replace(new RegExp(searchInput, 'gi'), '<span class="highlight">$&</span>');
+                searchResultsContainer.innerHTML += `
+                    <div class="search-result-item">
+                        <p class="search-result-text">${highlightedText}</p>
+                    </div>
+                `;
+            }
+        });
+
+        const noResultsMessage = document.querySelector('.no-results');
+        if (!found && searchInput !== "") {
+            noResultsMessage.style.display = 'block';
+        } else {
+            noResultsMessage.style.display = 'none';
+        }
+    }
+
+    function toggleView(button) {
+        const item = button.closest('.feedback-item');
+        item.classList.toggle('collapsed');
+        const icon = button.querySelector('.fas');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    }
+
+function toggleFilterMenu(event) {
+    event.stopPropagation(); // Prevent event propagation
+    const filterDropdown = document.querySelector('.filter-dropdown');
+    filterDropdown.style.display = filterDropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+    function toggleSubMenu(submenuId) {
+        const submenu = document.getElementById(submenuId);
+        submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+    }
+const reviewProperties = {}; // Store review properties
+
+// Jira API endpoints and credentials
+const JIRA_PROPERTY_LIST_ENDPOINT = 'http://localhost:2990/jira/rest/api/2/project/KOMOOTRE/properties';
+const JIRA_BASE_ENDPOINT = 'http://localhost:2990/jira/rest/api/2/project/KOMOOTRE/properties';
+const JIRA_CREDENTIALS = 'Basic ' + btoa('admin:admin');
+
+// Function to filter property keys based on a pattern
+function isRelevantProperty(key) {
+    return /^usage_review_review_\d+_de_komoot_android/.test(key);
+}
+
+// Fetch all property keys for the project
+async function fetchPropertyKeys() {
+    try {
+        const response = await fetch(JIRA_PROPERTY_LIST_ENDPOINT, {
+            method: 'GET',
+            headers: {
+                'Authorization': JIRA_CREDENTIALS,
+                'Accept': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return data.keys.map(key => key.key).filter(isRelevantProperty); // Filter relevant keys
+        } else {
+            console.error('Failed to fetch property keys. HTTP Status:', response.status);
+        }
+    } catch (error) {
+        console.error('Error fetching property keys:', error);
+    }
+    return [];
+}
+
+// Fetch and store relevant review properties
+async function fetchAndStoreRelevantProperties() {
+    try {
+        const propertyKeys = await fetchPropertyKeys();
+        console.log('Filtered Property Keys:', propertyKeys);
+
+        if (propertyKeys.length === 0) {
+            console.warn('No relevant property keys found.');
+            return;
+        }
+
+        for (const key of propertyKeys) {
+            try {
+                const response = await fetch(`${JIRA_BASE_ENDPOINT}/${key}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': JIRA_CREDENTIALS,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    reviewProperties[key] = data.value;
+                    console.log(`Stored property for key: ${key}`, data.value);
+                } else {
+                    console.error(`Failed to fetch property: ${key}. HTTP Status:`, response.status);
+                }
+            } catch (error) {
+                console.error(`Error fetching property for key: ${key}`, error);
+            }
+        }
+
+        console.log('All Relevant Properties Stored:', reviewProperties);
+    } catch (error) {
+        console.error('Error fetching and storing relevant properties:', error);
+    }
+}
+
+// Standardize feedback ID to match review property keys
+function standardizeFeedbackId(feedbackId) {
+    return feedbackId
+        .replace("Review_", "usage_review_review_")
+        .replace(/\./g, "_") // Replace dots with underscores
+        .toLowerCase();
+}
+
+// Highlight sentences containing words with the specified tore
+function highlightMatchingSentences(feedbackItems, toreLevels) {
+    const colorClasses = {
+        "Domain Level": "highlight-domain-level",
+        "Interaction Level": "highlight-interaction-level",
+        "System Level": "highlight-system-level"
+    };
+
+    feedbackItems.forEach(item => {
+        const textElement = item.querySelector('.feedback-text');
+        const feedbackText = textElement.textContent;
+
+        // Check for matched review key
+        const matchedReviewKey = item.dataset.matchedReview;
+        if (!matchedReviewKey || !reviewProperties[matchedReviewKey]) {
+            console.warn('No matched review found for feedback:', feedbackText);
+            return;
+        }
+
+        // Extract codes for the matched review
+        const codes = reviewProperties[matchedReviewKey].codes;
+
+        // Split text into sentences
+        const sentences = feedbackText.split(/(?<=[.!?])\s+/);
+
+        // Highlight sentences based on tore levels
+        const highlightedText = sentences
+            .map(sentence => {
+                const matchingCodes = codes.filter(code =>
+                    toreLevels.includes(code.tore) &&
+                    code.words.some(word => sentence.toLowerCase().includes(word.toLowerCase()))
+                );
+
+                if (matchingCodes.length > 0) {
+                    const colorClass = colorClasses[matchingCodes[0].tore] || "highlight-default";
+                    return `<span class="${colorClass}">${sentence}</span>`;
+                }
+
+                return sentence;
+            })
+            .join(' ');
+
+        // Update the feedback text with highlighted content
+        textElement.innerHTML = highlightedText;
+    });
+}
+
+// Filter by specific level (e.g., "Domain Level", "Interaction Level", "System Level")
+function filterByLevel(level) {
+    const feedbackItems = document.querySelectorAll('.feedback-item'); // Select all feedback items
+
+    // Only include the specified level for highlighting
+    const toreLevels = [level];
+
+    // Highlight sentences for the selected level
+    highlightMatchingSentences(feedbackItems, toreLevels);
+}
+
+// Apply filter to match feedback IDs with review properties
+function applyFilterToConfirmedReviews(feedbackItems) {
+    feedbackItems.forEach(item => {
+        const idElement = item.querySelector('.feedback-id');
+        if (!idElement) {
+            console.warn('Feedback ID not found for item.');
+            return;
+        }
+
+        const feedbackId = idElement.textContent.replace("ID: ", "").trim();
+        const matchingReviewKey = standardizeFeedbackId(feedbackId);
+
+        if (reviewProperties[matchingReviewKey]) {
+            item.dataset.matchedReview = matchingReviewKey; // Add custom attribute to the feedback item
+            console.log(`Feedback matched with review: ${matchingReviewKey}`);
+        } else {
+            console.warn(`No matching review found for feedback ID: ${feedbackId}`);
+        }
+    });
+}
+
+// Toggle the visibility of the filter dropdown menu
+function toggleFilterMenu(event) {
+    const filterDropdown = event.target.closest('.feedback-actions').querySelector('.filter-dropdown');
+    filterDropdown.style.display = filterDropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+// Toggle visibility of submenus in the filter dropdown
+function toggleSubMenu(submenuId) {
+    const submenu = document.getElementById(submenuId);
+    submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+}
+
+// Close the feedback panel
+function closeFeedbackPanel() {
+    document.querySelector('.feedback-panel').style.display = 'none';
+}
+
+// Fetch properties, match reviews, and highlight sentences
+document.addEventListener('DOMContentLoaded', async () => {
+    await fetchAndStoreRelevantProperties();
+
+    const feedbackItems = document.querySelectorAll('.feedback-item'); // Select all feedback items
+
+    // Match reviews to feedback items
+    applyFilterToConfirmedReviews(feedbackItems);
+
+    // Highlight all levels by default
+    //const toreLevels = ["Domain Level", "Interaction Level", "System Level"];
+    //highlightMatchingSentences(feedbackItems, toreLevels);
+
+    // Add filterByLevel to the global scope for use in HTML onclick handlers
+    window.filterByLevel = filterByLevel;
+    window.toggleFilterMenu = toggleFilterMenu;
+    window.toggleSubMenu = toggleSubMenu;
+});
+function filterByOption(option) {
+    const feedbackItems = document.querySelectorAll('.feedback-item'); // Select all feedback items
+    console.log(`Filtering by option: ${option}`); // Log selected option
+
+    // Define unique CSS classes for each option
+    const optionClasses = {
+        "Stakeholder": "highlight-stakeholder",
+        "Task": "highlight-task",
+        "Activity": "highlight-activity",
+        "Domain Data": "highlight-domain-data",
+        "Interaction": "highlight-interaction",
+        "Interaction Data": "highlight-interaction-data",
+        "System Function": "highlight-system-function",
+        "Workspace": "highlight-workspace",
+        "System": "highlight-system"
+    };
+
+    const highlightClass = optionClasses[option] || "highlight-default"; // Fallback class
+
+    // Highlight the active button
+    const buttons = document.querySelectorAll('.filter-option');
+    buttons.forEach(button => {
+        button.classList.remove(...Object.values(optionClasses)); // Remove all highlight classes
+        button.classList.remove('active'); // Remove active class
+    });
+    const activeButton = Array.from(buttons).find(btn => btn.textContent.trim() === option);
+    if (activeButton) {
+        activeButton.classList.add('active', highlightClass); // Add active and highlight class
+    }
+
+    feedbackItems.forEach(item => {
+        const textElement = item.querySelector('.feedback-text');
+        const originalText = textElement.getAttribute('data-original-text') || textElement.innerHTML;
+
+        // Save the original feedback text (if not already saved)
+        if (!textElement.getAttribute('data-original-text')) {
+            textElement.setAttribute('data-original-text', originalText);
+        }
+
+        const matchedReviewKey = item.dataset.matchedReview;
+        if (!matchedReviewKey || !reviewProperties[matchedReviewKey]) {
+            console.warn('No matched review found for feedback:', originalText);
+            return;
+        }
+
+        // Extract codes for the matched review
+        const codes = reviewProperties[matchedReviewKey].codes;
+
+        // Filter codes based on the selected option (tore)
+        const matchingCodes = codes.filter(code => code.tore === option);
+        if (matchingCodes.length === 0) {
+            console.warn(`No matching codes found for option: ${option}`);
+            return;
+        }
+
+        // Collect and sanitize words to highlight
+        const wordsToHighlight = matchingCodes
+            .flatMap(code => code.words)
+            .filter(word => word && word.trim() !== "") // Remove empty or whitespace-only words
+            .map(word => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')); // Escape special characters
+
+        if (wordsToHighlight.length === 0) {
+            console.warn(`No valid words to highlight for option: ${option}`);
+            return;
+        }
+
+        console.log(`Words to Highlight for "${option}":`, wordsToHighlight);
+
+        // Highlight matching words while preserving existing highlights
+        let updatedText = textElement.innerHTML;
+
+        wordsToHighlight.forEach(word => {
+            const regex = new RegExp(`(?!<[^>]*?)\\b(${word})\\b(?![^<]*?>)`, 'gi'); // Match words not inside <span>
+            updatedText = updatedText.replace(
+                regex,
+                `<span class="${highlightClass}">$1</span>`
+            );
+        });
+
+        textElement.innerHTML = updatedText; // Update the feedback text with combined highlights
+    });
+}
+
+</script>
+
